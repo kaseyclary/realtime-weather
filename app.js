@@ -1,11 +1,27 @@
-//Using request node module
-const request = require('request');
+const geocode = require('./utils/geocode.js')
+const forecast = require('./utils/forecast.js');
 
-const url = "http://api.weatherstack.com/current?access_key=44bbcac212311578107f1f0200340d3c&query=41.521910,-93.626250"
+const location = process.argv[2];
 
-//json: true is a request argument that automatically parses the json response
-//otherwise would use JSON.parse(response.body) - this eliminates that need
-//Use a browser extension to format JSON in the browser to make it more readable
-request({url: url, json: true}, (error, response) => {
-    console.log(`It is currently ${(response.body.current.temperature * (9/5)) + 32} degrees out and there is a ${response.body.current.precip}% chance of rain`);
-});
+if(!location){
+    console.log('Please provide a location.');
+} else {
+    geocode(location, (error, geoData) => {
+        if(error){
+            return console.log(error);
+        }
+        console.log('Error', error);
+        console.log('Data', geoData);
+        forecast(geoData.latitude, geoData.longitude, (error, forecastData) => {
+            if(error){
+                return console.log(error);
+            }
+            console.log('Error', error);
+            console.log('Data', forecastData);
+        });
+    });
+}
+
+
+
+
